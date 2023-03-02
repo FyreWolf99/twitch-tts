@@ -24,11 +24,28 @@ pub async fn main()
         .filter(|c| c != &'\n' && !c.is_whitespace())
         .collect::<String>();
 
+    println!("Add chatters you would like to be able to speak, type ({}) to finish", "QUIT".red());
+    let mut filter = message_filter::Filter::new();
+    //filter.add_user("fyrewolf99");
+    'selection: loop
+    {
+        let mut usr = String::new();
+        let _ = stdin().read_line(&mut usr).expect("Reading User Input Failed!");
+        if usr == "QUIT\n".to_owned()
+        {
+            break 'selection;
+        }
+        usr = usr
+            .to_lowercase()
+            .chars()
+            .filter(|c| c != &'\n' && !c.is_whitespace())
+            .collect::<String>();
+        filter.add_user(&usr);
+    }
+
     let config = ClientConfig::default();
     let (mut incoming_messages, client) = TwitchIRCClient::<SecureTCPTransport, StaticLoginCredentials>::new(config);
 
-    let mut filter = message_filter::Filter::new();
-    filter.add_user("fyrewolf99");
 
     // first thing you should do: start consuming incoming messages,
     // otherwise they will back up.
