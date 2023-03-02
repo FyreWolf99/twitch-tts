@@ -29,7 +29,7 @@ pub async fn main()
     // This function only returns an error if the passed channel login name is malformed,
     // so in this simple case where the channel name is hardcoded we can ignore the potential
     // error with `unwrap`.
-    client.join("xqc".to_owned()).expect("Streamer Must Be Live!");
+    client.join("xqc".to_owned()).expect("Streamer doesn't exist!\nUse the username, not the display name!");
 
     // keep the tokio executor alive.
     // If you return instead of waiting the background task will exit.
@@ -40,7 +40,7 @@ fn handle_message(message: message::ServerMessage)
 {
     match message
     {
-        message::ServerMessage::Privmsg(msg) => println!("{}{} {}", msg.sender.name.red(), ":".yellow(), colour_msg_text(&msg.message_text)),
+        message::ServerMessage::Privmsg(msg) => println!("{}{}{}", msg.sender.name.red(), ":".yellow(), colour_msg_text(&msg.message_text)),
         _ => {}
     }
 }
@@ -53,9 +53,10 @@ fn colour_msg_text(text: &str) -> String
 
     for word in text.split_whitespace()
     {
+        out.push(' ');
         if link.is_match(word)
         {
-            out.push_str(&word.blue());
+            out.push_str(&format!("{}", word.blue().italic()));
         }
         else
         {
