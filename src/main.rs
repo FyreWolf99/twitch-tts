@@ -4,16 +4,31 @@ use twitch_irc::
     ClientConfig,
     SecureTCPTransport,
     TwitchIRCClient,
-    message
 };
 use colored::*;
-use regex::Regex;
+use std::io::stdin;
+
+mod message_reader;
+mod ttsay;
+mod message_filter;
 
 #[tokio::main]
 pub async fn main()
 {
+    println!("Enter name of channel to watch:");
+    let mut chan = String::new();
+    let _ = stdin().read_line(&mut chan).expect("Reading User Input Failed!");
+    chan = chan
+        .to_lowercase()
+        .chars()
+        .filter(|c| c != &'\n' && !c.is_whitespace())
+        .collect::<String>();
+
     let config = ClientConfig::default();
     let (mut incoming_messages, client) = TwitchIRCClient::<SecureTCPTransport, StaticLoginCredentials>::new(config);
+
+    let mut filter = message_filter::Filter::new();
+    filter.add_user("fyrewolf99");
 
     // first thing you should do: start consuming incoming messages,
     // otherwise they will back up.
@@ -21,48 +36,19 @@ pub async fn main()
     {
         while let Some(message) = incoming_messages.recv().await
         {
-            handle_message(message);
+            filter.handle_message(message);
+            /*
+            message_reader::handle_message(&message);
+            ttsay::speak_message(&message);
+            */
         }
     });
 
     // join a channel
     // This function only returns an error if the passed channel login name is malformed,
-    // so in this simple case where the channel name is hardcoded we can ignore the potential
-    // error with `unwrap`.
-    client.join("xqc".to_owned()).expect("Streamer doesn't exist!\nUse the username, not the display name!");
+    client.join(chan).expect(&format!("{} Use the {}, not the {}!", "Streamer Doesn't Exist!".red(), "username".blue(), "display name".blue()));
 
     // keep the tokio executor alive.
     // If you return instead of waiting the background task will exit.
     join_handle.await.expect("Something went wrong?");
-}
-
-fn handle_message(message: message::ServerMessage)
-{
-    match message
-    {
-        message::ServerMessage::Privmsg(msg) => println!("{}{}{}", msg.sender.name.red(), ":".yellow(), colour_msg_text(&msg.message_text)),
-        _ => {}
-    }
-}
-
-fn colour_msg_text(text: &str) -> String
-{
-    let link = Regex::new(r"\S+\.\S+").unwrap();
-
-    let mut out = String::new();
-
-    for word in text.split_whitespace()
-    {
-        out.push(' ');
-        if link.is_match(word)
-        {
-            out.push_str(&format!("{}", word.blue().italic()));
-        }
-        else
-        {
-            out.push_str(word);
-        }
-    }
-
-    return out;
 }

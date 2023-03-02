@@ -9,6 +9,7 @@ edition = "2021"
 colored = "2.0.0"
 regex = "1.7.1"
 tokio = {version = "1.26.0", features = ["rt-multi-thread"]}
+tts = "0.25.0"
 twitch-irc = "5.0.0"
 
 [features]
