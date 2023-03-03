@@ -16,7 +16,6 @@ There are a few prerequisites for running the binary or building from source.
 |arch|debian|
 |----|------|
 |libspeechd|libspeechd-dev|
-|----------|--------------|
 |espeak-ng|espeak|
 
 ## Mac
