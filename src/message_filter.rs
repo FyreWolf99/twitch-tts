@@ -4,14 +4,15 @@ use crate::{message_reader, ttsay};
 
 pub struct Filter
 {
-    speakers: Vec<String>
+    speakers: Vec<String>,
+    speak_non_selected: bool
 }
 
 impl Filter
 {
-    pub fn new() -> Filter
+    pub fn new(speak_non_selected: bool) -> Filter
     {
-        Filter { speakers: Vec::new() }
+        Filter { speakers: Vec::new(), speak_non_selected }
     }
 
     pub fn add_user(&mut self, username: &str)
@@ -32,7 +33,7 @@ impl Filter
             message_reader::print_important_message(&msg);
             ttsay::speak_message(&msg);
         }
-        else
+        else if self.speak_non_selected
         {
             message_reader::print_message(&msg);
         }

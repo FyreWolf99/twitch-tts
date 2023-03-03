@@ -24,8 +24,18 @@ pub async fn main()
         .filter(|c| c != &'\n' && !c.is_whitespace())
         .collect::<String>();
 
+    println!("Would you like chatters other than the TTS people shown in the terminal? [{}/{}]", "y".green(), "N".red());
+    let mut select = String::new();
+    let _ = stdin().read_line(&mut select).expect("Reading from STDIN FAILED!");
+    let speak_no_sel = match select.to_lowercase().chars().nth(0)
+    {
+        Some('y') => true,
+        Some('n') => false,
+        _ => false
+    };
+
     println!("Add chatters you would like to be able to speak, type ({}) to finish", "QUIT".red());
-    let mut filter = message_filter::Filter::new();
+    let mut filter = message_filter::Filter::new(speak_no_sel);
     //filter.add_user("fyrewolf99");
     'selection: loop
     {
