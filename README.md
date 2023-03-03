@@ -20,3 +20,12 @@ There are a few prerequisites for running the binary or building from source.
 
 ## Mac
 Idk man, go figure it out.
+
+# Feature Planning
+
+- [x] TTS from certain chat members
+- [x] Terminal based interaction
+- [ ] Web-based interaction
+- [ ] GUI interaction 
+- [ ] Random selection of speakers
+- [ ] Actually being used on a stream
